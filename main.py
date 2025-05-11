@@ -1,4 +1,3 @@
-
 import os
 import openai
 import telegram
@@ -17,9 +16,14 @@ def handle_message(update, context):
             messages=[{"role": "user", "content": user_message}]
         )
         reply = response['choices'][0]['message']['content']
-        update.message.reply_text(reply)
     except Exception as e:
-        update.message.reply_text("حدث خطأ: " + str(e))
+        error_message = str(e).lower()
+        if "quota" in error_message:
+            reply = "⚠️ عذرًا، انتهى رصيد البوت في OpenAI حاليًا. يرجى المحاولة لاحقًا."
+        else:
+            reply = "❌ حدث خطأ أثناء الاتصال بـ OpenAI. الرسالة: " + str(e)
+    
+    update.message.reply_text(reply)
 
 def main():
     token = os.getenv("TELEGRAM_BOT_TOKEN")
